@@ -6,7 +6,7 @@ export async function GET() {
     const db = await getDb()
     const blogs = await db
       .collection("blogs")
-      .find({})
+      .find({ published: true })
       .sort({ createdAt: -1 })
       .toArray()
 
@@ -14,9 +14,14 @@ export async function GET() {
       blogs.map((blog) => ({
         _id: blog._id.toString(),
         title: blog.title,
-        description: blog.description,
+        slug: blog.slug,
+        excerpt: blog.excerpt || "",
+        content: blog.content || "",
+        author: blog.author || "",
+        coverImage: blog.coverImage || null,
         links: blog.links || [],
         imageFileId: blog.imageFileId || null,
+        published: blog.published ?? false,
         createdAt: blog.createdAt,
         updatedAt: blog.updatedAt,
       }))

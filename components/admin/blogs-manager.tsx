@@ -137,6 +137,8 @@ function BlogForm({
   onSaved: () => void
 }) {
   const [loading, setLoading] = useState(false)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string>(blog?.coverImage ?? "")
   const [form, setForm] = useState({
     title: blog?.title ?? "",
     slug: blog?.slug ?? "",
@@ -147,23 +149,46 @@ function BlogForm({
     published: blog?.published ?? false,
   })
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setImageFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     try {
+      const formData = new FormData()
+      formData.append("title", form.title)
+      formData.append("slug", form.slug)
+      formData.append("excerpt", form.excerpt)
+      formData.append("content", form.content)
+      formData.append("author", form.author)
+      formData.append("published", String(form.published))
+      if (imageFile) {
+        formData.append("image", imageFile)
+      } else if (form.coverImage) {
+        formData.append("coverImage", form.coverImage)
+      }
+
       if (blog) {
         await fetch(`/api/admin/blogs/${blog._id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify(form),
+          body: formData,
         })
       } else {
         await fetch("/api/admin/blogs", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify(form),
+          body: formData,
         })
       }
       onSaved()
@@ -222,17 +247,39 @@ function BlogForm({
             </div>
             <div className="space-y-2">
               <Label className="font-sans text-foreground">
-                Cover Image URL
+                Cover Image URL (Optional)
               </Label>
               <Input
                 value={form.coverImage}
-                onChange={(e) =>
+                onChange={(e) => {
                   setForm({ ...form, coverImage: e.target.value })
-                }
+                  setImagePreview(e.target.value)
+                }}
                 placeholder="https://..."
                 className="bg-background border-border font-sans"
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="font-sans text-foreground">
+              Or Upload Image
+            </Label>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="bg-background border-border font-sans cursor-pointer file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-accent/10 file:px-3 file:py-1 file:text-sm file:text-accent"
+            />
+            {imagePreview && (
+              <div className="mt-2 relative h-48 w-full overflow-hidden rounded-lg border border-border">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            )}
           </div>
           <div className="space-y-2">
             <Label className="font-sans text-foreground">Excerpt</Label>

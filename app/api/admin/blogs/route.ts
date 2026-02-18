@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { isAuthenticated } from "@/lib/auth"
 import { getDb } from "@/lib/mongodb"
+import { uploadFile } from "@/lib/gridfs"
 
 export async function GET() {
   if (!(await isAuthenticated())) {
@@ -24,6 +25,7 @@ export async function GET() {
         content: b.content,
         author: b.author,
         coverImage: b.coverImage || "",
+        imageFileId: b.imageFileId || null,
         published: b.published ?? false,
         createdAt: b.createdAt,
       }))
@@ -43,15 +45,27 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const body = await request.json()
-    const { title, slug, excerpt, content, author, coverImage, published } =
-      body
+    const formData = await request.formData()
+    const title = formData.get("title") as string
+    const slug = formData.get("slug") as string
+    const excerpt = formData.get("excerpt") as string
+    const content = formData.get("content") as string
+    const author = formData.get("author") as string
+    const coverImage = formData.get("coverImage") as string
+    const published = formData.get("published") === "true"
+    const imageFile = formData.get("image") as File | null
 
     if (!title || !slug || !excerpt || !content || !author) {
       return NextResponse.json(
         { error: "All fields are required" },
         { status: 400 }
       )
+    }
+
+    let imageFileId = null
+    if (imageFile) {
+      const buffer = Buffer.from(await imageFile.arrayBuffer())
+      imageFileId = await uploadFile(buffer, imageFile.name, imageFile.type)
     }
 
     const db = await getDb()
@@ -62,7 +76,8 @@ export async function POST(request: NextRequest) {
       content,
       author,
       coverImage: coverImage || "",
-      published: published ?? false,
+      imageFileId,
+      published,
       createdAt: new Date(),
       updatedAt: new Date(),
     })

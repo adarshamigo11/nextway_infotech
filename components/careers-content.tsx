@@ -128,7 +128,7 @@ export function CareersContent() {
               </p>
             </div>
           ) : (
-            <div className="flex flex-col gap-4">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {jobs.map((job, i) => (
                 <JobCard key={job._id} job={job} index={i} />
               ))}
@@ -141,36 +141,108 @@ export function CareersContent() {
 }
 
 function JobCard({ job, index }: { job: Job; index: number }) {
+  const [open, setOpen] = useState(false)
+
   return (
-    <GlassCard delay={index * 0.08}>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-2">
-          <h3 className="text-lg font-semibold text-foreground font-[family-name:var(--font-poppins)]">
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: index * 0.08 }}
+        onClick={() => setOpen(true)}
+        className="cursor-pointer"
+      >
+        <GlassCard delay={0}>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start justify-between">
+              <h3 className="text-lg font-semibold text-foreground font-[family-name:var(--font-poppins)]">
+                {job.title}
+              </h3>
+              <Briefcase className="h-5 w-5 text-accent" />
+            </div>
+            <p className="text-sm leading-relaxed text-muted-foreground line-clamp-3">
+              {job.description}
+            </p>
+            <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <MapPin className="h-3.5 w-3.5" />
+                {job.location}
+              </span>
+              <span className="flex items-center gap-1">
+                <Briefcase className="h-3.5 w-3.5" />
+                {job.type}
+              </span>
+              <span className="flex items-center gap-1">
+                <Calendar className="h-3.5 w-3.5" />
+                {new Date(job.createdAt).toLocaleDateString("en-IN")}
+              </span>
+            </div>
+            <Button 
+              variant="outline" 
+              className="w-full mt-2 border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+              onClick={(e) => {
+                e.stopPropagation()
+                setOpen(true)
+              }}
+            >
+              View Details
+            </Button>
+          </div>
+        </GlassCard>
+      </motion.div>
+
+      <JobDetailsDialog job={job} open={open} onOpenChange={setOpen} />
+    </>
+  )
+}
+
+function JobDetailsDialog({
+  job,
+  open,
+  onOpenChange,
+}: {
+  job: Job
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-[family-name:var(--font-poppins)]">
             {job.title}
-          </h3>
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            {job.description.length > 150
-              ? job.description.slice(0, 150) + "..."
-              : job.description}
-          </p>
-          <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <MapPin className="h-3.5 w-3.5" />
+          </DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+            <span className="flex items-center gap-2 rounded-md bg-accent/10 px-3 py-1.5">
+              <MapPin className="h-4 w-4 text-accent" />
               {job.location}
             </span>
-            <span className="flex items-center gap-1">
-              <Briefcase className="h-3.5 w-3.5" />
+            <span className="flex items-center gap-2 rounded-md bg-accent/10 px-3 py-1.5">
+              <Briefcase className="h-4 w-4 text-accent" />
               {job.type}
             </span>
-            <span className="flex items-center gap-1">
-              <Calendar className="h-3.5 w-3.5" />
-              {new Date(job.createdAt).toLocaleDateString("en-IN")}
+            <span className="flex items-center gap-2 rounded-md bg-accent/10 px-3 py-1.5">
+              <Calendar className="h-4 w-4 text-accent" />
+              Posted on {new Date(job.createdAt).toLocaleDateString("en-IN")}
             </span>
           </div>
+          
+          <div className="space-y-4">
+            <h4 className="font-semibold text-foreground font-[family-name:var(--font-poppins)]">
+              Job Description
+            </h4>
+            <div className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+              {job.description}
+            </div>
+          </div>
+          
+          <ApplyDialog jobId={job._id} jobTitle={job.title} />
         </div>
-        <ApplyDialog jobId={job._id} jobTitle={job.title} />
-      </div>
-    </GlassCard>
+      </DialogContent>
+    </Dialog>
   )
 }
 

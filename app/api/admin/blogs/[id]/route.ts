@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { isAuthenticated } from "@/lib/auth"
 import { getDb } from "@/lib/mongodb"
+import { uploadFile } from "@/lib/gridfs"
 import { ObjectId } from "mongodb"
 
 export async function PUT(
@@ -13,9 +14,15 @@ export async function PUT(
 
   try {
     const { id } = await params
-    const body = await request.json()
-    const { title, slug, excerpt, content, author, coverImage, published } =
-      body
+    const formData = await request.formData()
+    const title = formData.get("title") as string
+    const slug = formData.get("slug") as string
+    const excerpt = formData.get("excerpt") as string
+    const content = formData.get("content") as string
+    const author = formData.get("author") as string
+    const coverImage = formData.get("coverImage") as string
+    const published = formData.get("published") === "true"
+    const imageFile = formData.get("image") as File | null
 
     if (!title || !slug || !excerpt || !content || !author) {
       return NextResponse.json(
@@ -24,21 +31,30 @@ export async function PUT(
       )
     }
 
+    let imageFileId = null
+    if (imageFile) {
+      const buffer = Buffer.from(await imageFile.arrayBuffer())
+      imageFileId = await uploadFile(buffer, imageFile.name, imageFile.type)
+    }
+
     const db = await getDb()
+    const updateData: any = {
+      title,
+      slug,
+      excerpt,
+      content,
+      author,
+      coverImage: coverImage || "",
+      published,
+      updatedAt: new Date(),
+    }
+    if (imageFileId) {
+      updateData.imageFileId = imageFileId
+    }
+
     await db.collection("blogs").updateOne(
       { _id: new ObjectId(id) },
-      {
-        $set: {
-          title,
-          slug,
-          excerpt,
-          content,
-          author,
-          coverImage: coverImage || "",
-          published: published ?? false,
-          updatedAt: new Date(),
-        },
-      }
+      { $set: updateData }
     )
 
     return NextResponse.json({ success: true })
