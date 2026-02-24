@@ -46,6 +46,7 @@ export default function HomePage() {
         ctaHref="/services"
         secondaryCta="Contact Us"
         secondaryHref="/contact"
+        videoBackground
       />
 
       {/* Why Choose Us */}

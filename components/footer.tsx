@@ -1,4 +1,7 @@
+"use client"
+
 import Link from "next/link"
+import Image from "next/image"
 import { Mail, Phone, MapPin } from "lucide-react"
 
 const quickLinks = [
@@ -28,9 +31,19 @@ export function Footer() {
           {/* Brand */}
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent">
-                <span className="text-sm font-bold text-accent-foreground">NI</span>
-              </div>
+              <Image
+                src="/images/logo.JPEG"
+                alt="Nextway Infotech"
+                width={40}
+                height={40}
+                className="h-9 w-9 object-contain"
+                onError={(e) => {
+                  // Fallback to text logo if image fails to load
+                  const target = e.target as HTMLImageElement
+                  target.style.display = 'none'
+                  target.parentElement!.innerHTML = '<div class="flex h-9 w-9 items-center justify-center rounded-lg bg-accent"><span class="text-sm font-bold text-accent-foreground">NI</span></div>'
+                }}
+              />
               <span className="text-lg font-bold font-[family-name:var(--font-poppins)]">
                 Nextway Infotech
               </span>

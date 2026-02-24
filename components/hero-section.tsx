@@ -13,6 +13,7 @@ interface HeroSectionProps {
   secondaryHref?: string
   gradient?: "navy" | "emerald" | "mixed"
   compact?: boolean
+  videoBackground?: boolean
 }
 
 export function HeroSection({
@@ -24,6 +25,7 @@ export function HeroSection({
   secondaryHref,
   gradient = "mixed",
   compact = false,
+  videoBackground = false,
 }: HeroSectionProps) {
   const gradientMap = {
     navy: "from-primary via-navy-light to-primary",
@@ -33,19 +35,38 @@ export function HeroSection({
 
   return (
     <section
-      className={`relative flex items-center justify-center overflow-hidden bg-gradient-to-br ${gradientMap[gradient]} ${compact ? "py-20" : "py-32 lg:py-44"}`}
+      className={`relative flex items-center justify-center overflow-hidden ${videoBackground ? '' : `bg-gradient-to-br ${gradientMap[gradient]}`} ${compact ? "py-20" : "py-32 lg:py-44"}`}
     >
-      {/* Decorative dots */}
-      <div className="absolute inset-0 opacity-10">
-        <div
-          className="h-full w-full"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)",
-            backgroundSize: "30px 30px",
-          }}
-        />
-      </div>
+      {/* Video Background */}
+      {videoBackground && (
+        <>
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 h-full w-full object-cover"
+          >
+            <source src="/video/video1.mp4" type="video/mp4" />
+          </video>
+          {/* Black gradient overlay */}
+          <div className="absolute inset-0 bg-black/50" />
+        </>
+      )}
+
+      {/* Decorative dots - only show when not using video */}
+      {!videoBackground && (
+        <div className="absolute inset-0 opacity-10">
+          <div
+            className="h-full w-full"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)",
+              backgroundSize: "30px 30px",
+            }}
+          />
+        </div>
+      )}
 
       <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
         <motion.h1
