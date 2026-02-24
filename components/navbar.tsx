@@ -35,23 +35,20 @@ export function Navbar() {
     <header className="sticky top-0 z-50 glass border-b border-border/50">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 lg:px-8">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center">
           <Image
             src="/images/logo.JPEG"
             alt="Nextway Infotech"
-            width={40}
-            height={40}
-            className="h-9 w-9 object-contain"
+            width={400}
+            height={200}
+            className="h-18 w-45 object-contain"
             onError={(e) => {
               // Fallback to text logo if image fails to load
               const target = e.target as HTMLImageElement
               target.style.display = 'none'
-              target.parentElement!.innerHTML = '<div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary"><span class="text-sm font-bold text-primary-foreground">NI</span></div>'
+              target.parentElement!.innerHTML = '<div class="flex h-16 w-16 items-center justify-center rounded-lg bg-primary"><span class="text-xl font-bold text-primary-foreground">NI</span></div>'
             }}
           />
-          <span className="text-lg font-bold text-primary font-[family-name:var(--font-poppins)]">
-            Nextway Infotech
-          </span>
         </Link>
 
         {/* Desktop Navigation */}

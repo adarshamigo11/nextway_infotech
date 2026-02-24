@@ -100,7 +100,7 @@ export function Footer() {
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
                 <span className="text-sm text-primary-foreground/70">
-                  Indore, Madhya Pradesh, India
+                  407 Satguru Parinay, Indore (M.P.) 452010
                 </span>
               </li>
               <li className="flex items-center gap-2">

@@ -13,7 +13,7 @@ const contactInfo = [
   {
     icon: MapPin,
     title: "Visit Us",
-    detail: "Indore, Madhya Pradesh, India",
+    detail: "407 Satguru Parinay, Indore (M.P.) 452010",
   },
   {
     icon: Phone,
