@@ -32,7 +32,7 @@ export function Footer() {
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2">
               <Image
-                src="/images/logo.JPEG"
+                src="/images/logo.png"
                 alt="Nextway Infotech"
                 width={40}
                 height={40}
@@ -100,7 +100,7 @@ export function Footer() {
               <li className="flex items-start gap-2">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
                 <span className="text-sm text-primary-foreground/70">
-                  Indore, Madhya Pradesh, India
+                  407 Satguru Parinay, Indore (M.P.) 452010
                 </span>
               </li>
               <li className="flex items-center gap-2">

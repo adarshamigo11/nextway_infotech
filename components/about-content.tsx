@@ -165,7 +165,7 @@ export function AboutContent() {
         <div className="mx-auto max-w-7xl px-4 lg:px-8">
           <SectionHeading
             title="Our Location"
-            subtitle="Visit us at our office in Indore, Madhya Pradesh."
+            subtitle="Visit us at our office in 407 Satguru Parinay, Indore (M.P.) 452010."
           />
           <div className="overflow-hidden rounded-xl shadow-md">
             <iframe
